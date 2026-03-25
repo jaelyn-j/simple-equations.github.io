@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Simple Equations | Baby Shark Classroom Mode</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#A2D2FF;
+  --secondary:#FFAFCC;
+  --accent:#FFD6A5;
+  --danger:#FF70A6;
+  --text:#5B6171;
+  --success:#4CAF50;
+  --bg:#E7F0F8;
+  --white:#ffffff;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  height:100%;
+  overflow:hidden;
+  font-family:'Quicksand',sans-serif;
+  background:linear-gradient(180deg,#edf4fb 0%, #dfeaf5 100%);
+  color:var(--text);
+}
+body{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.deck{
+  position:relative;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+}
+.slide{
+  position:absolute;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:3vh 3vw 8vh;
+}
+.slide.active{display:flex}
+.slide-container{
+  background:#fff;
+  width:min(94vw, 1500px);
+  aspect-ratio:16/9;
+  border-radius:38px;
+  box-shadow:0 25px 55px rgba(0,0,0,0.12);
+  border:12px solid white;
+  outline:4px solid var(--primary);
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  padding:28px 68px 34px;
+}
+.decoration-bubble{
+  position:absolute;
+  background:linear-gradient(135deg,var(--primary),var(--secondary));
+  border-radius:50%;
+  opacity:.12;
+  z-index:0;
+}
+.slide-header{
+  z-index:2;
+  margin-bottom:6px;
+}
+.slide-title{
+  font-family:'Fredoka',sans-serif;
+  font-size:clamp(34px,3vw,54px);
+  color:#4A90E2;
+  margin:0;
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+.speaker-name{
+  font-size:clamp(18px,1.5vw,24px);
+  color:#94a3b8;
+  font-weight:400;
+  margin-top:10px;
+}
+.content-area{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  z-index:2;
+  text-align:center;
+  position:relative;
+}
+.left-content{
+  align-items:flex-start;
+  text-align:left;
+}
+.big-title{
+  font-family:'Fredoka',sans-serif;
+  font-size:clamp(76px,7vw,112px);
+  color:#4A90E2;
+  margin:0;
+  line-height:1;
+}
+.big-sub{
+  font-size:clamp(24px,2vw,34px);
+  color:#94a3b8;
+  margin-top:18px;
+}
+.row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  flex-wrap:wrap;
+}
+.equation-text{
+  font-size:clamp(40px,4.2vw,72px);
+  font-weight:700;
+  margin:0 5px;
+}
+.missing-sharks-label{
+  color:var(--danger);
+  font-family:'Fredoka',sans-serif;
+  font-size:clamp(34px,3.4vw,54px);
+  border-bottom:5px solid var(--danger);
+  padding:0 12px;
+  display:inline-block;
+  animation:wobble 2s infinite ease-in-out;
+}
+@keyframes wobble{
+  0%,100%{transform:rotate(-1deg)}
+  50%{transform:rotate(1deg)}
+}
+.math-display{
+  background:#FFFBF0;
+  padding:16px 42px;
+  border-radius:30px;
+  border:5px dashed var(--accent);
+  font-size:clamp(34px,3.8vw,62px);
+  font-weight:700;
+  margin:12px 0;
+  box-shadow:0 8px 0 var(--accent);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:20px;
+  position:relative;
+}
+.variable-x{
+  color:var(--danger);
+  font-family:'Fredoka',sans-serif;
+  display:inline-block;
+}
+.callout{
+  background:var(--primary);
+  color:white;
+  padding:20px 42px;
+  border-radius:30px;
+  font-size:clamp(24px,2.1vw,34px);
+  margin-top:20px;
+  box-shadow:0 8px 0 #7EC2FF;
+  max-width:980px;
+  line-height:1.35;
+}
+.callout strong{font-size:1.15em}
+.eq-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  font-weight:700;
+}
+.lhs{width:400px;text-align:right;padding-right:20px}
+.equals{width:60px;text-align:center;color:#c7d0dc}
+.rhs{width:400px;text-align:left;padding-left:20px}
+.step-arrow{
+  color:var(--primary);
+  font-size:clamp(22px,2vw,32px);
+  margin:8px 0 2px;
+}
+.math-box{
+  background:#FFFBF0;
+  padding:10px 44px;
+  border-radius:24px;
+  border:4px dashed var(--accent);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:fit-content;
+  margin:8px auto;
+}
+.solution-box{
+  font-size:clamp(42px,4vw,74px);
+  color:var(--success);
+  border-style:solid;
+  padding:12px 62px;
+}
+.grid-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:34px;
+  width:100%;
+  perspective:1000px;
+}
+.flip-card{
+  background-color:transparent;
+  height:400px;
+  cursor:pointer;
+}
+.flip-card-inner{
+  position:relative;
+  width:100%;
+  height:100%;
+  text-align:center;
+  transition:transform .8s;
+  transform-style:preserve-3d;
+}
+.flip-card.flipped .flip-card-inner{
+  transform:rotateY(180deg);
+}
+.flip-card-front,.flip-card-back{
+  position:absolute;
+  width:100%;
+  height:100%;
+  backface-visibility:hidden;
+  border-radius:36px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:30px;
+}
+.flip-card-front{
+  background:#F0F4FF;
+  border-bottom:8px solid #D0DBFF;
+}
+.flip-card-back{
+  background:#f0fdf4;
+  border:6px solid var(--success);
+  transform:rotateY(180deg);
+}
+.flip-card-front h3,.flip-card-back h4{
+  margin:0 0 14px 0;
+  font-size:clamp(28px,2vw,38px);
+  color:#4A90E2;
+  font-family:'Fredoka',sans-serif;
+}
+.flip-card-back h4{color:var(--success)}
+.problem-text{
+  font-size:clamp(42px,3.4vw,66px);
+  font-weight:700;
+}
+.solution-text{
+  font-size:clamp(22px,1.8vw,28px);
+  line-height:1.55;
+}
+.answer{
+  font-size:clamp(34px,2.8vw,48px);
+  color:var(--success);
+  font-family:'Fredoka',sans-serif;
+}
+.bottom-note{
+  margin-top:34px;
+  font-size:clamp(26px,2vw,34px);
+  color:var(--secondary);
+  font-weight:700;
+}
+.shark{
+  width:clamp(72px,7vw,104px);
+  height:clamp(72px,7vw,104px);
+  filter:drop-shadow(4px 4px 0 rgba(0,0,0,0.05));
+}
+.hero-shark{
+  width:220px;
+  height:220px;
+}
+.end-shark{
+  width:240px;
+  height:240px;
+}
+@keyframes swim{
+  0%,100%{transform:translate(0,0) rotate(0deg)}
+  25%{transform:translate(15px,-10px) rotate(3deg)}
+  50%{transform:translate(0,0) rotate(0deg)}
+  75%{transform:translate(-15px,-5px) rotate(-3deg)}
+}
+@keyframes drift{
+  0%{transform:translateX(-120px) translateY(0)}
+  100%{transform:translateX(1600px) translateY(-50px)}
+}
+.swimming-shark{animation:swim 4s ease-in-out infinite}
+.drifting-shark{
+  position:absolute;
+  z-index:1;
+  opacity:.55;
+  animation:drift 15s linear infinite;
+}
+.reveal{
+  opacity:0;
+  transform:translateY(16px) scale(.98);
+  transition:opacity .45s ease, transform .45s ease;
+  pointer-events:none;
+}
+.reveal.visible{
+  opacity:1;
+  transform:translateY(0) scale(1);
+  pointer-events:auto;
+}
+.nav{
+  position:fixed;
+  left:50%;
+  bottom:18px;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  gap:12px;
+  z-index:30;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(8px);
+  padding:10px 14px;
+  border-radius:999px;
+  box-shadow:0 8px 28px rgba(0,0,0,.12);
+}
+.btn{
+  border:none;
+  border-radius:999px;
+  padding:12px 18px;
+  cursor:pointer;
+  font-size:15px;
+  font-weight:700;
+}
+.btn.primary{
+  background:#4A90E2;
+  color:white;
+}
+.btn.secondary{
+  background:#e9f3ff;
+  color:#4A90E2;
+}
+.dots{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#cbd7e7;
+}
+.dot.active{background:#4A90E2}
+@media (max-width: 950px){
+  .slide-container{width:96vw;padding:22px 26px 28px}
+  .grid-2{grid-template-columns:1fr}
+  .flip-card{height:280px}
+  .lhs,.rhs{width:auto;padding:0}
+  .equals{width:auto}
+}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<svg style="display:none;">
+  <symbol id="icon-shark" viewBox="0 0 100 100">
+    <path d="M90,50 C90,70 70,85 50,85 C30,85 10,70 10,50 C10,30 30,15 50,15 C70,15 90,30 90,50 Z" fill="#A2D2FF" />
+    <path d="M50,15 L65,5 L55,15 Z" fill="#7EB2E0" />
+    <path d="M10,50 L2,40 L10,35 Z" fill="#7EB2E0" />
+    <circle cx="65" cy="40" r="6" fill="white" />
+    <circle cx="67" cy="40" r="3" fill="#333" />
+    <path d="M60,65 Q70,65 75,55" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" />
+    <path d="M30,55 Q35,50 40,55" fill="none" stroke="#7EB2E0" stroke-width="2" />
+    <path d="M30,62 Q35,57 40,62" fill="none" stroke="#7EB2E0" stroke-width="2" />
+  </symbol>
+</svg>
+
+<section class="slide active">
+  <div class="slide-container">
+    <div class="decoration-bubble" style="width:520px;height:520px;top:-170px;left:-170px;"></div>
+    <div class="decoration-bubble" style="width:300px;height:300px;bottom:-60px;right:-60px;"></div>
+    <div class="content-area">
+      <div class="swimming-shark" style="margin-bottom:28px;">
+        <svg class="hero-shark"><use href="#icon-shark"></use></svg>
+      </div>
+      <div class="left-content">
+        <h1 class="big-title">Simple Equations</h1>
+        <p class="speaker-name">Speaker: Lin Jiang</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-container">
+    <div class="decoration-bubble" style="width:300px;height:300px;top:-50px;right:-50px;"></div>
+    <div class="slide-header">
+      <h2 class="slide-title">Ocean Mystery</h2>
+    </div>
+    <div class="content-area">
+      <div class="row">
+        <svg class="shark"><use href="#icon-shark"></use></svg>
+        <svg class="shark"><use href="#icon-shark"></use></svg>
+        <svg class="shark"><use href="#icon-shark"></use></svg>
+        <span class="equation-text">+</span>
+        <span class="missing-sharks-label">missing sharks</span>
+        <span class="equation-text">= 8</span>
+      </div>
+      <div class="callout reveal first-visible">
+        The <span style="color:var(--accent);font-weight:bold;">missing sharks</span> is what we call an <br>
+        <strong>Unknown Number</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide step-slide">
+  <div class="slide-container">
+    <div class="slide-header">
+      <h2 class="slide-title">Meet Mr. x</h2>
+    </div>
+    <div class="content-area" style="justify-content:flex-start;padding-top:12px;">
+      <p style="font-size:clamp(22px,1.8vw,28px);margin-bottom:6px;">First we write it as an equation</p>
+      <div class="math-display" style="font-size:clamp(30px,3vw,48px);padding:10px 35px;">
+        3 + <span style="color:var(--danger);">unknown number</span> = 8
+      </div>
+
+      <div class="reveal">
+        <div class="step-arrow">↓</div>
+        <p style="font-size:clamp(22px,1.8vw,28px);margin:6px 0;">We use a variable</p>
+      </div>
+
+      <div class="reveal">
+        <div class="math-display" style="border-color:var(--primary);background:#F0F8FF;width:min(70%,520px);margin-bottom:26px;">
+          3 + <span class="variable-x">x</span> = 8
+        </div>
+      </div>
+
+      <div class="reveal">
+        <div style="background:var(--secondary);color:white;padding:14px 22px;border-radius:22px;font-size:clamp(18px,1.4vw,22px);max-width:650px;line-height:1.4;box-shadow:0 8px 16px rgba(255,175,204,.3);">
+          Any letter or symbol can stand for an unknown number
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide step-slide">
+  <div class="slide-container">
+    <div class="slide-header">
+      <h2 class="slide-title">The Balance Rule</h2>
+    </div>
+    <div class="content-area">
+      <div class="eq-row" style="font-size:clamp(44px,4vw,68px);">
+        <div class="lhs">3 + <span class="variable-x">x</span></div>
+        <div class="equals">=</div>
+        <div class="rhs">8</div>
+      </div>
+
+      <div class="reveal">
+        <div class="step-arrow">↓</div>
+        <p style="font-size:clamp(20px,1.5vw,24px);margin:0;color:var(--primary);">Subtract 3 from BOTH sides</p>
+      </div>
+
+      <div class="reveal">
+        <div class="eq-row" style="font-size:clamp(30px,2.8vw,46px);color:var(--secondary);margin-top:12px;">
+          <div class="lhs">3 - 3 + <span class="variable-x">x</span></div>
+          <div class="equals">=</div>
+          <div class="rhs">8 - 3</div>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <div class="step-arrow">↓</div>
+      </div>
+
+      <div class="reveal">
+        <div class="math-box solution-box">
+          <div class="eq-row">
+            <div class="lhs" style="width:150px;text-align:right;"><span class="variable-x">x</span></div>
+            <div class="equals" style="color:var(--success);">=</div>
+            <div class="rhs" style="width:150px;">5</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide step-slide">
+  <div class="slide-container">
+    <div class="slide-header">
+      <h2 class="slide-title">Another Example</h2>
+    </div>
+    <div class="content-area">
+      <div class="eq-row" style="font-size:clamp(44px,4vw,68px);">
+        <div class="lhs"><span class="variable-x">x</span> - 21</div>
+        <div class="equals">=</div>
+        <div class="rhs">8</div>
+      </div>
+
+      <div class="reveal">
+        <div class="step-arrow">↓</div>
+        <p style="font-size:clamp(20px,1.5vw,24px);margin:0;color:var(--primary);">Add 21 to BOTH sides</p>
+      </div>
+
+      <div class="reveal">
+        <div class="eq-row" style="font-size:clamp(30px,2.8vw,46px);color:var(--secondary);margin-top:12px;">
+          <div class="lhs"><span class="variable-x">x</span> - 21 + 21</div>
+          <div class="equals">=</div>
+          <div class="rhs">8 + 21</div>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <div class="step-arrow">↓</div>
+      </div>
+
+      <div class="reveal">
+        <div class="math-box solution-box">
+          <div class="eq-row">
+            <div class="lhs" style="width:150px;text-align:right;"><span class="variable-x">x</span></div>
+            <div class="equals" style="color:var(--success);">=</div>
+            <div class="rhs" style="width:150px;">29</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide step-slide">
+  <div class="slide-container">
+    <div class="slide-header">
+      <h2 class="slide-title">Your Turn</h2>
+    </div>
+    <div class="content-area">
+      <div class="grid-2">
+        <div class="flip-card reveal first-visible" tabindex="0">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <h3>Problem 1</h3>
+              <div class="problem-text">x + 15 = 25</div>
+            </div>
+            <div class="flip-card-back">
+              <h4>Solution</h4>
+              <div class="solution-text">
+                x + 15 = 25<br>
+                Subtract 15<br>
+                x + 15 - 15 = 25 - 15
+                <hr style="border:1px dashed #ccc;margin:12px 0;">
+                <div class="answer">x = 10</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flip-card reveal" tabindex="0">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <h3>Problem 2</h3>
+              <div class="problem-text">x - 5 = 12</div>
+            </div>
+            <div class="flip-card-back">
+              <h4>Solution</h4>
+              <div class="solution-text">
+                x - 5 = 12<br>
+                Add 5<br>
+                x - 5 + 5 = 12 + 5
+                <hr style="border:1px dashed #ccc;margin:12px 0;">
+                <div class="answer">x = 17</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="bottom-note reveal">Click each card to flip it</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-container">
+    <div class="drifting-shark" style="top:100px;animation-delay:0s;">
+      <svg class="shark" style="width:110px;height:110px;"><use href="#icon-shark"></use></svg>
+    </div>
+    <div class="drifting-shark" style="top:300px;animation-delay:-5s;">
+      <svg class="shark" style="width:150px;height:150px;"><use href="#icon-shark"></use></svg>
+    </div>
+    <div class="drifting-shark" style="top:520px;animation-delay:-10s;">
+      <svg class="shark" style="width:90px;height:90px;"><use href="#icon-shark"></use></svg>
+    </div>
+    <div class="content-area">
+      <h1 class="big-title" style="font-size:clamp(82px,7vw,116px);">Thank You!</h1>
+      <div class="swimming-shark" style="margin-top:26px;">
+        <svg class="end-shark"><use href="#icon-shark"></use></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="nav">
+  <button class="btn secondary" id="prevBtn">Previous</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn primary" id="nextBtn">Next</button>
+</div>
+
+</div>
+
+<script>
+const slides = [...document.querySelectorAll('.slide')];
+const dotsWrap = document.getElementById('dots');
+let current = 0;
+
+slides.forEach((_, i) => {
+  const dot = document.createElement('div');
+  dot.className = 'dot' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goTo(i));
+  dotsWrap.appendChild(dot);
+});
+
+function updateDots(){
+  [...dotsWrap.children].forEach((d, i) => d.classList.toggle('active', i === current));
+}
+
+function resetSlideState(slide){
+  slide.querySelectorAll('.reveal').forEach(el => {
+    if(el.classList.contains('first-visible')){
+      el.classList.add('visible');
+    } else {
+      el.classList.remove('visible');
+    }
+  });
+  slide.querySelectorAll('.flip-card').forEach(card => card.classList.remove('flipped'));
+}
+
+slides.forEach(resetSlideState);
+
+function goTo(index){
+  slides[current].classList.remove('active');
+  current = (index + slides.length) % slides.length;
+  slides[current].classList.add('active');
+  updateDots();
+}
+
+function currentSlide(){
+  return slides[current];
+}
+
+function revealNext(){
+  const slide = currentSlide();
+  const hidden = slide.querySelector('.reveal:not(.visible)');
+  if(hidden){
+    hidden.classList.add('visible');
+    return true;
+  }
+  return false;
+}
+
+function hideLastReveal(){
+  const slide = currentSlide();
+  const reveals = [...slide.querySelectorAll('.reveal.visible')].filter(el => !el.classList.contains('first-visible'));
+  if(reveals.length){
+    reveals[reveals.length - 1].classList.remove('visible');
+    return true;
+  }
+  return false;
+}
+
+function nextAction(){
+  if(!revealNext()) goTo(current + 1);
+}
+
+function prevAction(){
+  if(!hideLastReveal()) goTo(current - 1);
+}
+
+document.getElementById('nextBtn').addEventListener('click', nextAction);
+document.getElementById('prevBtn').addEventListener('click', prevAction);
+
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'ArrowRight' || e.key === ' '){
+    e.preventDefault();
+    nextAction();
+  }
+  if(e.key === 'ArrowLeft'){
+    e.preventDefault();
+    prevAction();
+  }
+});
+
+document.querySelectorAll('.slide-container').forEach(container => {
+  container.addEventListener('click', (e) => {
+    if(e.target.closest('.flip-card')) return;
+    revealNext();
+  });
+});
+
+document.querySelectorAll('.flip-card').forEach(card => {
+  card.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if(card.classList.contains('visible') || card.classList.contains('first-visible')){
+      card.classList.toggle('flipped');
+    }
+  });
+  card.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      if(card.classList.contains('visible') || card.classList.contains('first-visible')){
+        card.classList.toggle('flipped');
+      }
+    }
+  });
+});
+</script>
+</body>
+</html>
